@@ -1,8 +1,12 @@
 # StokexCMS
 
-### Endpoints
+[![Tests](https://github.com/alfredats/stokexCMS/actions/workflows/onPush.yml/badge.svg)](https://github.com/alfredats/stokexCMS/actions/workflows/onPush.yml)
 
-##### Price
+[![Release](https://github.com/alfredats/stokexCMS/actions/workflows/versioned.yml/badge.svg)](https://github.com/alfredats/stokexCMS/actions/workflows/versioned.yml)
+
+## Endpoints
+
+### Price
 Endpoint: `/price/{ticker}`
 
 **Request**
@@ -20,6 +24,8 @@ Endpoint: `/price/{ticker}`
 
 
 **Example**
+
+
 With endpoint: `/price/AAPL?interval=5min`
 
 ```json

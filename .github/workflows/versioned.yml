@@ -1,11 +1,15 @@
-name: versioned
+name: Release 
 on: 
   push:
     tags:
       - 'v*'
       - 'v*-alpha'
+env:
+  PRICE_API_KEY: ${{ secrets.price_api_key }}
+  SPRING_DATASOURCE_PASSWORD: ${{ secrets.spring_datasource_password }}
+  SPRING_REDIS_PASSWORD: ${{ secrets.spring_redis_password }}
 jobs:
-  compile-test-deploy:
+  Release:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository code
@@ -40,12 +44,5 @@ jobs:
         source: target/site/jacoco/
         out_dir: coverage/${{ github.event.repository.name }}/jacoco/
         permission: public-read
-    - name: deploy to heroku
-      uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: "paf-assessment-alfred"
-        heroku_email: ${{secrets.HEROKU_EMAIL}}
-        branch: ${{github.ref_name}}
   
 
