@@ -1,5 +1,5 @@
 name: Tests
-on: [push]
+on: [ push ]
 env:
   PRICE_API_KEY: ${{ secrets.price_api_key }}
   SPRING_DATASOURCE_PASSWORD: ${{ secrets.spring_datasource_password }}
@@ -10,6 +10,11 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
+    - name: Checkout badges branch to a badges directory nested inside first checkout
+      uses: actions/checkout@v3
+      with:
+        ref: badges
+        path: badges
     - uses: actions/setup-java@v3
       with:
         distribution: 'temurin' # See 'Supported distributions' for available options
