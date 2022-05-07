@@ -24,25 +24,3 @@ jobs:
         maven-version: 3.8.4
     - name: Run tests
       run: mvn clean verify
-    - name: Upload coverage badge to DigitalOcean bucket
-      uses: BetaHuhn/do-spaces-action@v2
-      with:
-        access_key: ${{ secrets.BUCKET_ACCESS_KEY }}
-        secret_key: ${{ secrets.BUCKET_SECRET_KEY }}
-        space_name: visavttppaf-alfred
-        space_region: sgp1
-        source: .github/badges/jacoco.svg
-        out_dir: coverage/${{ github.event.repository.name }}
-        permission: public-read
-    - name: Upload coverage report to DigitalOcean bucket
-      uses: BetaHuhn/do-spaces-action@v2
-      with:
-        access_key: ${{ secrets.BUCKET_ACCESS_KEY }}
-        secret_key: ${{ secrets.BUCKET_SECRET_KEY }}
-        space_name: visavttppaf-alfred
-        space_region: sgp1
-        source: target/site/jacoco/
-        out_dir: coverage/${{ github.event.repository.name }}/jacoco/
-        permission: public-read
-  
-
