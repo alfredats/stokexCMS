@@ -3,7 +3,7 @@ package visa.vttp.paf.stokexCMS.repo;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import visa.vttp.paf.stokexCMS.model.Price;
+import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
 
 @Repository
-public interface PriceRepository extends CrudRepository<Price, String>{}
+public interface PriceRepository extends CrudRepository<TimeSeries, String>{}

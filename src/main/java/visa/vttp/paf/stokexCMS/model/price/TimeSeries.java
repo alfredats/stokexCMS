@@ -1,6 +1,5 @@
-package visa.vttp.paf.stokexCMS.model;
+package visa.vttp.paf.stokexCMS.model.price;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.redis.core.RedisHash;
@@ -11,7 +10,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 
 @RedisHash
-public class Price {
+public class TimeSeries {
     @TimeToLive
     private long time; 
 

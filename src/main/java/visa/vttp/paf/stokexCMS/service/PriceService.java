@@ -19,9 +19,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import visa.vttp.paf.stokexCMS.config.PriceProperties;
-import visa.vttp.paf.stokexCMS.model.Price;
-import visa.vttp.paf.stokexCMS.model.StokexUtils;
+import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
 import visa.vttp.paf.stokexCMS.repo.PriceRepository;
+import visa.vttp.paf.stokexCMS.utils.StokexUtils;
 
 @Service
 @EnableConfigurationProperties(PriceProperties.class)
@@ -46,12 +46,12 @@ public class PriceService {
         ALLOWED_INTERVALS = ttlMap.keySet();
     }
 
-    public Optional<Price> getIntradayByTicker(String ticker) { return this.getPricesByTicker(ticker, "5min"); }    
-    public Optional<Price> getDailyByTicker(String ticker) { return this.getPricesByTicker(ticker, "1day"); }
-    public Optional<Price> getWeeklyByTicker(String ticker) { return this.getPricesByTicker(ticker, "1week"); }
-    public Optional<Price> getMonthlyByTicker(String ticker) { return this.getPricesByTicker(ticker, "1month"); }
+    public Optional<TimeSeries> getIntradayByTicker(String ticker) { return this.getPricesByTicker(ticker, "5min"); }    
+    public Optional<TimeSeries> getDailyByTicker(String ticker) { return this.getPricesByTicker(ticker, "1day"); }
+    public Optional<TimeSeries> getWeeklyByTicker(String ticker) { return this.getPricesByTicker(ticker, "1week"); }
+    public Optional<TimeSeries> getMonthlyByTicker(String ticker) { return this.getPricesByTicker(ticker, "1month"); }
 
-    public Optional<Price> getPricesByTicker(String ticker, String interval) {
+    public Optional<TimeSeries> getPricesByTicker(String ticker, String interval) {
         final String endpoint = "/time_series";
 
         String uString = UriComponentsBuilder
@@ -70,7 +70,7 @@ public class PriceService {
 
         Optional<String> resp = this.exchangeGet(req);
         if (resp.isPresent()) {
-            Price p = StokexUtils.createPrice(resp.get(), interval.equals("5min"));
+            TimeSeries p = StokexUtils.createPrice(resp.get(), interval.equals("5min"));
             p.setTime(ttlMap.get(interval));
             p.setName(ticker + ":" + interval);
             pRepo.save(p);

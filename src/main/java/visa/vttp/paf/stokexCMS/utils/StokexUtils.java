@@ -1,4 +1,4 @@
-package visa.vttp.paf.stokexCMS.model;
+package visa.vttp.paf.stokexCMS.utils;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -11,19 +11,21 @@ import java.util.List;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
+import visa.vttp.paf.stokexCMS.model.price.PriceTuple;
 
 public class StokexUtils {
 
     private static DateTimeFormatter genDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static DateTimeFormatter intraDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static Price createPrice(String jsonResp, boolean isIntraday) {
+    public static TimeSeries createPrice(String jsonResp, boolean isIntraday) {
         if (isIntraday) { return createPrice(jsonResp, intraDtf); }
         return createPrice(jsonResp, genDtf);
     }
 
-    public static Price createPrice(String jsonResp, DateTimeFormatter dtf) {
-        Price p = new Price();
+    public static TimeSeries createPrice(String jsonResp, DateTimeFormatter dtf) {
+        TimeSeries p = new TimeSeries();
         JsonObject json = Json.createReader(new StringReader(jsonResp)).readObject();
         JsonObject metadata = json.getJsonObject("meta");
         JsonArray timeSeries = json.getJsonArray("values");

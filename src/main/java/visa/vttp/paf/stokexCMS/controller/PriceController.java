@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import visa.vttp.paf.stokexCMS.model.Price;
+import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
 import visa.vttp.paf.stokexCMS.service.PriceService;
 
 @RestController
@@ -34,7 +34,7 @@ public class PriceController {
         if (!PriceService.ALLOWED_INTERVALS.contains(interval)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{'error': 'only intervals of 5min, 1day, 1week, or 1month allowed'}");
         }
-        Price p;
+        TimeSeries p;
         ticker = ticker.toUpperCase();
         try {
             p = pSvc.getPricesByTicker(ticker, interval).orElseThrow();

@@ -1,4 +1,4 @@
-package visa.vttp.paf.stokexCMS.model;
+package visa.vttp.paf.stokexCMS.model.price;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
