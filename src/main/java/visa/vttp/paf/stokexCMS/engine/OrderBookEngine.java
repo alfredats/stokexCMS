@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 
 import visa.vttp.paf.stokexCMS.constants.OrderStatus;
 import visa.vttp.paf.stokexCMS.constants.OrderType;
+import visa.vttp.paf.stokexCMS.engine.datatypes.Executed;
+import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedTrade;
+import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedCancel;
 import visa.vttp.paf.stokexCMS.model.Order;
 
 import static visa.vttp.paf.stokexCMS.engine.Comparators.ORDER_COMPARATOR;
@@ -18,11 +20,11 @@ import static visa.vttp.paf.stokexCMS.engine.Comparators.ORDER_COMPARATOR;
 public class OrderBookEngine {
     private PriorityQueue<Order> bids = new PriorityQueue<>(ORDER_COMPARATOR);
     private PriorityQueue<Order> asks = new PriorityQueue<>(ORDER_COMPARATOR);
-    private List<ExecutedTrade> trades = new ArrayList<>(); 
+    private List<Executed> executedOps = new ArrayList<>(); 
+    private String ticker;
 
     @Bean
-    @Scope("singleton")
-    public OrderBookEngine createOrderBookEngine() { return new OrderBookEngine(); }
+    public OrderBookEngine createOrderBookEngine(String ticker) { return new OrderBookEngine().setTicker(ticker); }
     
     public void processOrder(Order incoming) {
         if (incoming.getOrderType() == OrderType.cancel) {
@@ -30,6 +32,9 @@ public class OrderBookEngine {
             boolean removed = 
                 this.removeOrder(orderID, this.getBids()) || this.removeOrder(orderID, this.getAsks());
             if (!removed) { throw new RuntimeException("No such order with orderID found: " + orderID); }
+            
+            ExecutedCancel ec = ExecutedCancel.create(incoming);
+            this.addExecutedOp(ec);
             return;
         }
 
@@ -37,6 +42,7 @@ public class OrderBookEngine {
             Order bookOrd = (incoming.getOrderType() == OrderType.bid) ? this.getAsks().peek() : this.getBids().peek();
             Integer qtyBias = incoming.getUnfulfilledQty() - bookOrd.getUnfulfilledQty();
             Integer fulfilledQty = Math.min(incoming.getUnfulfilledQty(), bookOrd.getUnfulfilledQty());
+            ExecutedTrade et = ExecutedTrade.create(incoming, bookOrd);
             if (qtyBias == 0) {
                 incoming.setOrderStatus(OrderStatus.fulfilled);
                 bookOrd.setOrderStatus(OrderStatus.fulfilled);
@@ -52,10 +58,9 @@ public class OrderBookEngine {
             incoming.setUpdated(LocalDateTime.now());
             bookOrd.setUpdated(LocalDateTime.now());
             BigDecimal fee = this.calculateTradeFee(incoming, bookOrd, fulfilledQty);
-            ExecutedTrade et = ExecutedTrade.create(incoming, bookOrd);
             et.setFee(fee);
             et.setFulfilledQty(fulfilledQty);
-            this.addTrade(et);
+            this.addExecutedOp(et);
 
             if (qtyBias >= 0) {
                 if (bookOrd.getOrderType() == OrderType.ask) { this.getAsks().poll(); }
@@ -98,24 +103,25 @@ public class OrderBookEngine {
     private void addBid(Order incoming) {
         this.bids.add(incoming);
     }
-
-    public void addTrade(ExecutedTrade trade) {
-        this.trades.add(trade);
+    
+    private void addExecutedOp(Executed e) {
+        this.executedOps.add(e);
     }
 
     /**
-     * @return List<ExecutedTrade> return the trades
+     * @return List<Executed> return the executedOps
      */
-    public List<ExecutedTrade> getTrades() {
-        return trades;
+    public List<Executed> getExecutedOps() {
+        return executedOps;
     }
 
     /**
-     * @param trades the trades to set
+     * @param executedOps the executedOps to set
      */
-    public void setTrades(List<ExecutedTrade> trades) {
-        this.trades = trades;
+    public void setExecutedOps(List<Executed> executedOps) {
+        this.executedOps = executedOps;
     }
+
 
     /**
      * @return PriorityQueue<Order> return the bids
@@ -143,6 +149,22 @@ public class OrderBookEngine {
      */
     public void setAsks(PriorityQueue<Order> asks) {
         this.asks = asks;
+    }
+
+
+    /**
+     * @return String return the ticker
+     */
+    public String getTicker() {
+        return ticker;
+    }
+
+    /**
+     * @param ticker the ticker to set
+     */
+    private OrderBookEngine setTicker(String ticker) {
+        this.ticker = ticker;
+        return this;
     }
 
 

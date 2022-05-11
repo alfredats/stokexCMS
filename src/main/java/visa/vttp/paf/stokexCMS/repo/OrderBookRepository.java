@@ -15,7 +15,6 @@ import static visa.vttp.paf.stokexCMS.repo.Queries.*;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class OrderBookRepository {
     @Autowired
     private JdbcTemplate jt;
 
-    public String submitClientOrder(Order o) {
+    public Integer submitOrder(Order o) {
         KeyHolder kh = new GeneratedKeyHolder();
         jt.update((conn) -> {
             PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ORDER, Statement.RETURN_GENERATED_KEYS);
@@ -37,7 +36,8 @@ public class OrderBookRepository {
             return ps;
         }, kh);
 
-        return kh.getKey().toString();
+        
+        return kh.getKey().intValue();
     }
 
     public List<Order> getActiveOrdersByUsername(String username) {
@@ -59,14 +59,36 @@ public class OrderBookRepository {
         return oLst;
     }
 
-    public boolean updateClientOrder(String orderID, OrderStatus updateType) {
+    public boolean updateOrderStatus(Integer orderID, Integer updateType) {
         final int rows = jt.update(
             SQL_UPDATE_ORDER_BY_ORDERID, 
             updateType, 
-            LocalDateTime.now(ZoneOffset.UTC),
+            LocalDateTime.now(),
             orderID);
-        return rows == 1;
+        if (rows == 1) { return true; }
+        throw new RuntimeException(
+            "Failed to update Order of %d with status %d".formatted(
+                orderID, 
+                updateType
+            )
+        );
     }
 
+    public boolean updateOrderStatus(Integer orderID, Integer updateType, Integer unfulfilledSize) {
+        final int rows = jt.update(
+            SQL_UPDATE_ORDER_PARTIAL_BY_ORDERID, 
+            updateType, 
+            unfulfilledSize,
+            LocalDateTime.now(),
+            orderID);
+        if (rows == 1) { return true; }
+        throw new RuntimeException(
+            "Failed to update Order of %d with status %d and unfulfilled quantity %d".formatted(
+                orderID, 
+                updateType, 
+                unfulfilledSize
+            )
+        );
+    }
     
 }

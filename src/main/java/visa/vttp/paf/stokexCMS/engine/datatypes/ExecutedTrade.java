@@ -1,17 +1,22 @@
-package visa.vttp.paf.stokexCMS.engine;
+package visa.vttp.paf.stokexCMS.engine.datatypes;
 
 import java.math.BigDecimal;
 
 import visa.vttp.paf.stokexCMS.constants.OrderType;
 import visa.vttp.paf.stokexCMS.model.Order;
 
-public class ExecutedTrade {
+public class ExecutedTrade implements Executed {
     private Order bid;
     private Order ask;
+    private String ticker;
     private Integer fulfilledQty;
     private BigDecimal fee;
     
     public static ExecutedTrade create(Order a, Order b) {
+        if (!a.getTicker().equals(b.getTicker())) { 
+            throw new RuntimeException("Error: Factory method create() of " +
+            "ExecutedTrade requires both orders to be for the same Ticker;");
+        }
         ExecutedTrade e = new ExecutedTrade();
         if (a.getOrderType() == OrderType.bid && b.getOrderType() == OrderType.ask) {
             e.setBid(a); e.setAsk(b);
@@ -20,7 +25,7 @@ public class ExecutedTrade {
             e.setBid(b); e.setAsk(a);
             return e;
         }
-        return null;
+        throw new RuntimeException("Error: Factory Method create() of ExecutedTrace requires 1 bid, 1 ask;");    
     }
 
 
@@ -79,6 +84,21 @@ public class ExecutedTrade {
      */
     public void setFee(BigDecimal fee) {
         this.fee = fee;
+    }
+
+
+    /**
+     * @return String return the ticker
+     */
+    public String getTicker() {
+        return ticker;
+    }
+
+    /**
+     * @param ticker the ticker to set
+     */
+    public void setTicker(String ticker) {
+        this.ticker = ticker;
     }
 
 }

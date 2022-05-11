@@ -17,6 +17,7 @@ CREATE TABLE users (
   username char(64) not null
 , password binary(20) not null
 , apiKey char(64) not null
+, access enum('user', 'admin') DEFAULT('user')
 , dateCreated datetime not null DEFAULT(CURRENT_TIMESTAMP)
 
 , PRIMARY KEY(username)
@@ -64,5 +65,26 @@ CREATE TABLE orderBook (
     FOREIGN KEY(order_status)
     REFERENCES orderStatus(status_int)
 );
+
+CREATE TABLE trades (
+  trade_id int not null auto_increment,
+, bid_id int not null
+, ask_id int not null
+, ticker varchar(10) not null
+, fulfilledQty int not null
+, fee float(10,2) not null
+, timestamp_created datetime not null DEFAULT(CURRENT_TIMESTAMP)
+
+, PRIMARY KEY(trade_id)
+, CONSTRAINT fk_trades_bidID
+    FOREIGN KEY(bid_id)
+    REFERENCES orderBook(order_id)
+, CONSTRAINT fk_trades_askID
+    FOREIGN KEY(ask_id)
+    REFERENCES orderBook(order_id)
+, CONSTRAINT fk_trades_ticker
+    FOREIGN KEY(ticker)
+    REFERENCES stocks(ticker)
+)
 
 

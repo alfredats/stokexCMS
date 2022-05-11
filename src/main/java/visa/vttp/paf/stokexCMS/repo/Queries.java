@@ -7,18 +7,24 @@ public interface Queries {
             price,
             size,
             order_type,
-            username,
+            username
         ) VALUES 
             (?,?,?,?,?);
             """;
-    public static final String SQL_UPDATE_ORDER_BY_ORDERID = """
+    public static final String SQL_UPDATE_ORDER_PARTIAL_BY_ORDERID = """
         UPDATE orderBook
         SET order_status = ?,
-            timestamp_updated = ?,
-            note = ?
+            size = ?,
+            timestamp_updated = ?
         WHERE order_id = ?;
         """;
 
+    public static final String SQL_UPDATE_ORDER_BY_ORDERID = """
+        UPDATE orderBook
+        SET order_status = ?,
+            timestamp_updated = ?
+        WHERE order_id = ?;
+        """;
     public static final String SQL_GET_ORDERS_BY_USERNAME = """
         SELECT 
             order_id,

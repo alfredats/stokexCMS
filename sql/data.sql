@@ -23,9 +23,18 @@ INSERT INTO orderStatus (
 INSERT INTO users (
   username
 , password
+, access
 , apiKey
 ) VALUES 
-  ('testUser', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')));
+  ('adminUser', UNHEX(SHA1('adminPassword')), 'admin', UNHEX(SHA1('adminApiKey')));
+
+INSERT INTO users (
+  username
+, password
+, apiKey
+) VALUES 
+  ('testUser', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')))
+, ('maysieSim', UNHEX(SHA1('maysieSim')), UNHEX(SHA1('maysieSim')));
 
 INSERT INTO stocks (
   ticker
