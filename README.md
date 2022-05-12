@@ -1,7 +1,7 @@
 # StokexCMS
 
 [![Tests](https://github.com/alfredats/stokexCMS/actions/workflows/onPush.yml/badge.svg)](https://github.com/alfredats/stokexCMS/actions/workflows/onPush.yml)
-[![Coverage](https://visavttppaf-alfred.sgp1.digitaloceanspaces.com/coverage/stokexCMS/jacoco.svg)](https://visavttppaf-alfred.sgp1.digitaloceanspaces.com/coverage/stokexCMS/jacoco/index.html)
+[![Coverage](https://visavttppaf-alfred.sgp1.digitaloceanspaces.com/coverage/stokexCMS/jacoco.svg](https://visavttppaf-alfred.sgp1.digitaloceanspaces.com/coverage/stokexCMS/jacoco/index.html)
 
 
 [![Release](https://github.com/alfredats/stokexCMS/actions/workflows/versioned.yml/badge.svg)](https://github.com/alfredats/stokexCMS/actions/workflows/versioned.yml)
