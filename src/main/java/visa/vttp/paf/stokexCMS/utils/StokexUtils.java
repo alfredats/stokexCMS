@@ -8,10 +8,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
+import visa.vttp.paf.stokexCMS.model.Order;
 import visa.vttp.paf.stokexCMS.model.price.PriceTuple;
 
 public class StokexUtils {
@@ -43,6 +46,20 @@ public class StokexUtils {
             });
         p.setPriceData(lpt);
         return p;
+    }
+
+    public static Order createOrder(SqlRowSet rs) {
+        Order o = new Order();
+        o.setOrderID(rs.getInt("order_id"));
+        o.setTicker(rs.getString("ticker"));
+        o.setPrice(rs.getBigDecimal("price"));
+        o.setUnfulfilledQty(rs.getInt("size"));
+        o.setOrderType(rs.getInt("order_type"));
+        o.setOrderStatus(rs.getInt("order_status"));
+        o.setCreated(LocalDateTime.parse(rs.getString("timestamp_created")));
+        o.setUpdated(LocalDateTime.parse(rs.getString("timestamp_updated")));
+        o.setUsername(rs.getString("username"));
+        return o;
     }
 
     

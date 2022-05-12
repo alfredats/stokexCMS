@@ -22,11 +22,12 @@ public class OrderBookEngine {
     private PriorityQueue<Order> asks = new PriorityQueue<>(ORDER_COMPARATOR);
     private List<Executed> executedOps = new ArrayList<>(); 
     private String ticker;
+    public static final String TICKER_TEST_ONLY = "TICKERTEST";
 
     @Bean
-    public OrderBookEngine createOrderBookEngine(String ticker) { return new OrderBookEngine().setTicker(ticker); }
-    
-    public void processOrder(Order incoming) {
+    public static OrderBookEngine createOrderBookEngine(String ticker) { return new OrderBookEngine().setTicker(ticker); }
+
+    public boolean processOrder(Order incoming) {
         if (incoming.getOrderType() == OrderType.cancel) {
             Integer orderID = incoming.getOrderID();
             boolean removed = 
@@ -35,7 +36,7 @@ public class OrderBookEngine {
             
             ExecutedCancel ec = ExecutedCancel.create(incoming);
             this.addExecutedOp(ec);
-            return;
+            return true;
         }
 
         while (this.orderCanProceed(incoming)) {
@@ -72,6 +73,7 @@ public class OrderBookEngine {
             if (incoming.getOrderType() == OrderType.bid) { this.addBid(incoming); }
             else { this.addAsk(incoming); }
         }
+        return true;
     }
 
 

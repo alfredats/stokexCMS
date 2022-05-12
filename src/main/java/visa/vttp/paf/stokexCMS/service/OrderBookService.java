@@ -1,5 +1,6 @@
 package visa.vttp.paf.stokexCMS.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import visa.vttp.paf.stokexCMS.constants.OrderStatus;
 import visa.vttp.paf.stokexCMS.constants.OrderType;
 import visa.vttp.paf.stokexCMS.engine.OrderBookEngine;
+import static visa.vttp.paf.stokexCMS.engine.OrderBookEngine.TICKER_TEST_ONLY;
 import visa.vttp.paf.stokexCMS.engine.datatypes.Executed;
 import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedCancel;
 import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedTrade;
@@ -33,28 +35,30 @@ public class OrderBookService {
     private TradesRepository tRepo;
 
     @Autowired 
-    private static Map<String, OrderBookEngine> obEngineMap;
+    private static Map<String, OrderBookEngine> obEngineMap = new HashMap<>();
 
     @PostConstruct
     private static void init() {
         /**
          * INIT INSTANCES OF ORDERBOOKENGINE FOR EACH TICKER
          */
+        obEngineMap.put(TICKER_TEST_ONLY, OrderBookEngine.createOrderBookEngine(TICKER_TEST_ONLY));
+        obEngineMap.put("AAPL", OrderBookEngine.createOrderBookEngine("AAPL"));
     }
 
 
-    public boolean submitOrder(Order o) {
+    public Integer submitOrder(Order o) {
         /**
          * 1) submit order to mysql as backup
          * 2) send order to appropriate orderbookengine
          */
-        Integer id;
-        if (!(o.getOrderType() == OrderType.cancel)) {
+        Integer id = o.getOrderID();
+        if (null == id) {
             id = obRepo.submitOrder(o);
             o.setOrderID(id);
         }
         obEngineMap.get(o.getTicker()).processOrder(o);
-        return true;
+        return id;
     }
 
     public boolean updateOrderStatus(Order o) {

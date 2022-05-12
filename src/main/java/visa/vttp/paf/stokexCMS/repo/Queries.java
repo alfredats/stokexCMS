@@ -1,11 +1,7 @@
 package visa.vttp.paf.stokexCMS.repo;
 
 public interface Queries {
-    public static final String SQL_DELETE_ORDER_BY_FIELD_AND_VALUE= """
-        DELETE FROM orderBook
-        WHERE ? = ?;
-            """;
-    public static final String SQL_INSERT_ORDER = """
+    public static final String SQL_INSERT_ORDER_WOUT_ORDERID = """
         INSERT INTO orderBook (
             ticker,
             price,
@@ -14,6 +10,31 @@ public interface Queries {
             username
         ) VALUES 
             (?,?,?,?,?);
+            """;
+    public static final String SQL_INSERT_ORDER = """
+        INSERT INTO orderBook (
+            order_id,
+            ticker,
+            price,
+            size,
+            order_type,
+            username
+        ) VALUES 
+            (?,?,?,?,?,?);
+            """;
+    public static final String SQL_GET_ORDER_BY_ORDERID = """
+        SELECT 
+            order_id,
+            ticker, 
+            price, 
+            size, 
+            order_type, 
+            order_status, 
+            timestamp_created, 
+            timestamp_updated,
+            username
+        FROM orderBook
+        WHERE order_id = ?; 
             """;
     public static final String SQL_UPDATE_ORDER_PARTIAL_BY_ORDERID = """
         UPDATE orderBook
@@ -85,4 +106,8 @@ public interface Queries {
         AND order_status < 20
         ORDER BY price;
         """;
+    public static final String SQL_DELETE_ORDER_BY_TICKER = """
+        DELETE FROM orderBook
+        WHERE ticker = ?;
+            """;
 }

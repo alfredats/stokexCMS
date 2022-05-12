@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 @SpringBootTest
-public class EngineComparatorTests {
+public class Test_EngineComparator {
 
     private static List<Order> expected;
 
