@@ -1,6 +1,10 @@
 package visa.vttp.paf.stokexCMS.repo;
 
 public interface Queries {
+    public static final String SQL_DELETE_ORDER_BY_FIELD_AND_VALUE= """
+        DELETE FROM orderBook
+        WHERE ? = ?;
+            """;
     public static final String SQL_INSERT_ORDER = """
         INSERT INTO orderBook (
             ticker,

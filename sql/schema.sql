@@ -16,7 +16,7 @@ CREATE TABLE stocks (
 CREATE TABLE users (
   username char(64) not null
 , password binary(20) not null
-, apiKey char(64) not null
+, apiKey binary(20) not null
 , access enum('user', 'admin') DEFAULT('user')
 , dateCreated datetime not null DEFAULT(CURRENT_TIMESTAMP)
 
@@ -49,7 +49,6 @@ CREATE TABLE orderBook (
 , timestamp_created datetime not null DEFAULT(CURRENT_TIMESTAMP) -- matching engine sees timestamp_created
 , timestamp_updated datetime not null DEFAULT(CURRENT_TIMESTAMP) -- user sees timestamp_updated
 , username char(64) not null
-, note varchar(128) 
 
 , PRIMARY KEY(order_id)
 , CONSTRAINT fk_ticker
@@ -67,7 +66,7 @@ CREATE TABLE orderBook (
 );
 
 CREATE TABLE trades (
-  trade_id int not null auto_increment,
+  trade_id int not null auto_increment
 , bid_id int not null
 , ask_id int not null
 , ticker varchar(10) not null

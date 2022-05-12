@@ -14,6 +14,10 @@ public class Order {
     private LocalDateTime created;
     private LocalDateTime updated;
 
+    public void setPrice(Double d) {
+        this.setPrice(new BigDecimal(d));
+    }
+
     /**
      * @return Integer return the orderID
      */

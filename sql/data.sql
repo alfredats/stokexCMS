@@ -33,7 +33,8 @@ INSERT INTO users (
 , password
 , apiKey
 ) VALUES 
-  ('testUser', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')))
+  ('testUser1', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')))
+  ('testUser2', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')))
 , ('maysieSim', UNHEX(SHA1('maysieSim')), UNHEX(SHA1('maysieSim')));
 
 INSERT INTO stocks (
@@ -42,11 +43,12 @@ INSERT INTO stocks (
 , currentPrice
 ) VALUES 
   ('AAPL', 'Apple Inc.', 157.39)
-, ('TSLA', 'Tesla Inc.', 867.29)
-, ('MSFT', 'Microsoft Corporation', 275.15)
-, ('V', 'Visa Inc.', 202.82)
-, ('NFLX', 'Netflix Inc.', 180.97)
-, ('GOOG', 'Alphabet Inc.', 2313.20)
-, ('AMZN', 'Amazon.com Inc.', 2295.45)
-, ('SHOP', 'Shopify Inc.', 377.49)
 ;
+-- , ('TSLA', 'Tesla Inc.', 867.29)
+-- , ('MSFT', 'Microsoft Corporation', 275.15)
+-- , ('V', 'Visa Inc.', 202.82)
+-- , ('NFLX', 'Netflix Inc.', 180.97)
+-- , ('GOOG', 'Alphabet Inc.', 2313.20)
+-- , ('AMZN', 'Amazon.com Inc.', 2295.45)
+-- , ('SHOP', 'Shopify Inc.', 377.49)
+-- ;

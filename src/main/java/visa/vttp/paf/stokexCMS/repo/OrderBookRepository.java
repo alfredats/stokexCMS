@@ -74,7 +74,11 @@ public class OrderBookRepository {
         );
     }
 
-    public boolean updateOrderStatus(Integer orderID, Integer updateType, Integer unfulfilledSize) {
+    public boolean updateOrderStatus(
+        Integer orderID, 
+        Integer updateType, 
+        Integer unfulfilledSize
+    ) {
         final int rows = jt.update(
             SQL_UPDATE_ORDER_PARTIAL_BY_ORDERID, 
             updateType, 
@@ -89,6 +93,15 @@ public class OrderBookRepository {
                 unfulfilledSize
             )
         );
+    }
+
+    public boolean deleteOrderByFieldAndValue(
+        String field,
+        String value 
+    ) {
+        final int rows = jt.update(SQL_DELETE_ORDER_BY_FIELD_AND_VALUE, field, value);
+        if (rows == 1) { return true; }
+        throw new RuntimeException("Failed to delete Order with %s and %s".formatted(field, value));
     }
     
 }
