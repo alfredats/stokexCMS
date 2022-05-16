@@ -32,9 +32,10 @@ INSERT INTO users (
   username
 , password
 , apiKey
-) VALUES 
-  ('testUser1', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')))
-, ('testUser2', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey')))
+) VALUES
+  ('dumbEngine', UNHEX(SHA1('dumbPassword')), UNHEX(SHA1('dumbApiKey')))
+, ('testUser1', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey1')))
+, ('testUser2', UNHEX(SHA1('testPassword')), UNHEX(SHA1('testApiKey2')))
 , ('maysieSim', UNHEX(SHA1('maysieSim')), UNHEX(SHA1('maysieSim')));
 
 INSERT INTO stocks (

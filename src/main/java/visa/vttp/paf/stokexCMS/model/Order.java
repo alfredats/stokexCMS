@@ -14,6 +14,13 @@ public class Order {
     private LocalDateTime created;
     private LocalDateTime updated;
 
+    @Override
+    public String toString() {
+        return "Order [created=" + created + ", orderID=" + orderID + ", orderStatus=" + orderStatus + ", orderType="
+                + orderType + ", price=" + price + ", ticker=" + ticker + ", unfulfilledQty=" + unfulfilledQty
+                + ", updated=" + updated + ", username=" + username + "]";
+    }
+
     public void setPrice(Double d) {
         this.setPrice(new BigDecimal(d));
     }

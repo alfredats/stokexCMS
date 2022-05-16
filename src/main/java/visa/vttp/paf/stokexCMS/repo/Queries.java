@@ -80,7 +80,7 @@ public interface Queries {
         AND username = ?
         ORDER BY dateUpdated DESC;
         """;
-    public static final String SQL_GET_UNFULFILLED_BID_ORDERS_BY_TICKER = """
+    public static final String SQL_GET_UNFULFILLED_ORDERS = """
         SELECT 
             order_id,
             price, 
@@ -88,10 +88,8 @@ public interface Queries {
             username,
             timestamp_created
         FROM orderBook
-        WHERE ticker = ?
-        AND order_type = 1 
-        AND order_status < 20
-        ORDER BY price;
+        WHERE order_status < 20
+        ORDER BY timestamp_created;
         """;
     public static final String SQL_GET_UNFULFILLED_ASK_ORDERS_BY_TICKER = """
         SELECT 
@@ -110,4 +108,48 @@ public interface Queries {
         DELETE FROM orderBook
         WHERE ticker = ?;
             """;
+
+
+
+
+    /** TRADE QUERIES */
+    public static final String SQL_INSERT_EXECUTED_TRADE = """
+        INSERT INTO trades(
+            bid_id,
+            ask_id,
+            ticker,
+            fulfilledQty,
+            fee
+        ) VALUES 
+            (?,?,?,?,?);
+    """;
+    public static final String SQL_GET_TRADE_BY_ORDER_ID = """
+        SELECT 
+            trade_id,
+            bid_id,
+            ask_id,
+            ticker,
+            fulfilledQty,
+            fee,
+            timestamp_created
+        FROM trades
+        WHERE bid_id = ?
+        OR ask_id = ?
+    """;
+
+    /** USERS QUERIES */
+    public static final String SQL_GET_HASH_BY_LOGIN = """
+        SELECT 
+            apiKey
+        FROM users
+        WHERE username = ?
+        AND password = UNHEX(SHA1(?));
+    """;
+    public static final String SQL_GET_USERNAME_BY_APIKEY = """
+        SELECT
+            username
+        FROM users
+        WHERE apiKey = UNHEX(SHA1(?));
+    """;
+
 }

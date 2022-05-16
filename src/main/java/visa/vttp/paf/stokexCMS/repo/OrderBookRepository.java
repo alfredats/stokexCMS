@@ -36,27 +36,17 @@ public class OrderBookRepository {
     }
 
     public Integer submitOrder(Order o) {
-        if (null == o.getOrderID()) {
-            KeyHolder kh = new GeneratedKeyHolder();
-            jt.update((conn) -> {
-                PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ORDER_WOUT_ORDERID, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, o.getTicker());
-                ps.setBigDecimal(2, o.getPrice());
-                ps.setInt(3, o.getUnfulfilledQty());
-                ps.setInt(4, o.getOrderType());
-                ps.setString(5, o.getUsername());
-                return ps;
-            }, kh);
-            return kh.getKey().intValue();
-        }
-        jt.update(SQL_INSERT_ORDER, 
-            o.getOrderID(),
-            o.getTicker(),
-            o.getPrice(),
-            o.getUnfulfilledQty(),
-            o.getOrderType(),
-            o.getUsername());
-        return o.getOrderID();
+        KeyHolder kh = new GeneratedKeyHolder();
+        jt.update((conn) -> {
+            PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ORDER_WOUT_ORDERID, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, o.getTicker());
+            ps.setBigDecimal(2, o.getPrice());
+            ps.setInt(3, o.getUnfulfilledQty());
+            ps.setInt(4, o.getOrderType());
+            ps.setString(5, o.getUsername());
+            return ps;
+        }, kh);
+        return kh.getKey().intValue();
     }
 
     public boolean updateOrderStatus(Integer orderID, Integer updateType) {
@@ -99,23 +89,32 @@ public class OrderBookRepository {
 
 
     /* MULTIPLE ORDER OPERATIONS */
-
-
-    public List<Order> getActiveOrdersByUsername(String username) {
+    public List<Order> getAllOrdersByUsername(String username) {
         List<Order> orderList = new ArrayList<>();
-        final SqlRowSet rs = jt.queryForRowSet(SQL_GET_ACTIVE_ORDERS_BY_USERNAME, username);
-
-        for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
-            orderList.add((Order) rs.getObject(i));
+        final SqlRowSet rs = jt.queryForRowSet(SQL_GET_ORDERS_BY_USERNAME, username);
+        while(rs.next()) {
+            Order i = StokexUtils.createOrder(rs);
+            orderList.add(i);
         }
         return orderList;
     }
 
-    public List<Order> getBidOrdersByTicker(String ticker) {
+    public List<Order> getActiveOrdersByUsername(String username) {
+        List<Order> orderList = new ArrayList<>();
+        final SqlRowSet rs = jt.queryForRowSet(SQL_GET_ACTIVE_ORDERS_BY_USERNAME, username);
+        while(rs.next()) {
+            Order i = StokexUtils.createOrder(rs);
+            orderList.add(i);
+        }
+        return orderList;
+    }
+
+    public List<Order> getActiveOrders() {
         List<Order> oLst = new ArrayList<>();
-        final SqlRowSet rs = jt.queryForRowSet(SQL_GET_UNFULFILLED_BID_ORDERS_BY_TICKER, ticker);
-        for (int i = 0; i < rs.getMetaData().getColumnCount(); i++) {
-            oLst.add((Order) rs.getObject(i));
+        final SqlRowSet rs = jt.queryForRowSet(SQL_GET_UNFULFILLED_ORDERS);
+        while(rs.next()) {
+            Order i = StokexUtils.createOrder(rs);
+            oLst.add(i);
         }
         return oLst;
     }

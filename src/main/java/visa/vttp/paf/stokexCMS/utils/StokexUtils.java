@@ -14,6 +14,8 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
+import visa.vttp.paf.stokexCMS.engine.datatypes.Executed;
+import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedTrade;
 import visa.vttp.paf.stokexCMS.model.Order;
 import visa.vttp.paf.stokexCMS.model.price.PriceTuple;
 
@@ -22,12 +24,12 @@ public class StokexUtils {
     private static DateTimeFormatter genDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static DateTimeFormatter intraDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static TimeSeries createPrice(String jsonResp, boolean isIntraday) {
+    public static final TimeSeries createPrice(String jsonResp, boolean isIntraday) {
         if (isIntraday) { return createPrice(jsonResp, intraDtf); }
         return createPrice(jsonResp, genDtf);
     }
 
-    public static TimeSeries createPrice(String jsonResp, DateTimeFormatter dtf) {
+    public static final TimeSeries createPrice(String jsonResp, DateTimeFormatter dtf) {
         TimeSeries p = new TimeSeries();
         JsonObject json = Json.createReader(new StringReader(jsonResp)).readObject();
         JsonObject metadata = json.getJsonObject("meta");
@@ -48,7 +50,7 @@ public class StokexUtils {
         return p;
     }
 
-    public static Order createOrder(SqlRowSet rs) {
+    public static final Order createOrder(SqlRowSet rs) {
         Order o = new Order();
         o.setOrderID(rs.getInt("order_id"));
         o.setTicker(rs.getString("ticker"));
@@ -60,6 +62,16 @@ public class StokexUtils {
         o.setUpdated(LocalDateTime.parse(rs.getString("timestamp_updated")));
         o.setUsername(rs.getString("username"));
         return o;
+    }
+
+    public static final ExecutedTrade createExecuted(SqlRowSet rs) {
+        ExecutedTrade et = new ExecutedTrade();
+        et.setBid(rs.getInt("bid_id"));
+        et.setAsk(rs.getInt("ask_id"));
+        et.setTicker(rs.getString("ticker"));
+        et.setFulfilledQty(rs.getInt("fulfilledQty"));
+        et.setFee(rs.getBigDecimal("fee"));
+        return et;
     }
 
     
