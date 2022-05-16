@@ -122,7 +122,7 @@ public class OrderBookRepository {
 
 
     /**
-     * NOTE: THIS METHOD MIGHT DELETE MORE THAN 1 RECORD. USE WITH CAUTION.
+     * NOTE: THIS METHOD MAY OR MAY NOT DELETE RECORDS. USE WITH CAUTION.
      * @param field
      * @param value
      * @return
@@ -131,8 +131,7 @@ public class OrderBookRepository {
         String value 
     ) {
         final int rows = jt.update(SQL_DELETE_ORDER_BY_TICKER, value);
-        if (rows >= 1) { return true; }
-        throw new RuntimeException("Failed to delete Order with ticker = %s".formatted(value));
+        return true; 
     }
     
 }
