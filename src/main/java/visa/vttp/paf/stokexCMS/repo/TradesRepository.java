@@ -37,4 +37,9 @@ public class TradesRepository {
         return StokexUtils.createExecuted(rs);
     }
     
+    public boolean deleteTradesByTicker(String ticker) {
+        final int rows = jt.update(SQl_DELETE_TRADES_BY_TICKER, ticker);
+        return (rows >= 0);
+    }
+    
 }

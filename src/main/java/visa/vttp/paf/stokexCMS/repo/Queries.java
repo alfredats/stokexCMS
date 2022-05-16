@@ -136,6 +136,10 @@ public interface Queries {
         WHERE bid_id = ?
         OR ask_id = ?
     """;
+    public static final String SQl_DELETE_TRADES_BY_TICKER = """
+        DELETE FROM trades
+        WHERE ticker = ?;
+    """;
 
     /** USERS QUERIES */
     public static final String SQL_GET_HASH_BY_LOGIN = """
