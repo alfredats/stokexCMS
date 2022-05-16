@@ -15,11 +15,11 @@ import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedTrade;
 import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedCancel;
 import visa.vttp.paf.stokexCMS.model.Order;
 
-import static visa.vttp.paf.stokexCMS.engine.Comparators.ORDER_COMPARATOR;
+import static visa.vttp.paf.stokexCMS.engine.Comparators.*;
 
 public class OrderBookEngine {
-    private PriorityQueue<Order> bids = new PriorityQueue<>(ORDER_COMPARATOR);
-    private PriorityQueue<Order> asks = new PriorityQueue<>(ORDER_COMPARATOR);
+    private PriorityQueue<Order> bids = new PriorityQueue<>(BID_COMPARATOR);
+    private PriorityQueue<Order> asks = new PriorityQueue<>(ASK_COMPARATOR);
     private List<Executed> executedOps = new ArrayList<>(); 
     private String ticker;
     public static final String TICKER_TEST_ONLY = "TICKERTEST";
@@ -28,6 +28,7 @@ public class OrderBookEngine {
     public static OrderBookEngine createOrderBookEngine(String ticker) { return new OrderBookEngine().setTicker(ticker); }
 
     public boolean processOrder(Order incoming) {
+        System.out.println(">>> processing order of id: "+ incoming.getOrderID());
         if (incoming.getOrderType() == OrderType.cancel) {
             Integer orderID = incoming.getOrderID();
             boolean removed = 
