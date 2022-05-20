@@ -48,6 +48,6 @@ public class AuthController {
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Incorrect credentials\"}");
         }
-        return ResponseEntity.ok().body("{\"sessionKey\": %s }".formatted(sessKey));
+        return ResponseEntity.ok().body("{\"sessionKey\": \"%s\" }".formatted(sessKey));
     } 
 }

@@ -41,10 +41,21 @@ public class OrderBookEngine {
         }
 
         while (this.orderCanProceed(incoming)) {
-            Order bookOrd = (incoming.getOrderType() == OrderType.bid) ? this.getAsks().peek() : this.getBids().peek();
+            ExecutedTrade et = new ExecutedTrade();
+            Order bookOrd; 
+            if (incoming.getOrderType() == OrderType.bid) { 
+                bookOrd = this.getAsks().peek();
+                et.setBid(incoming.getOrderID());
+                et.setAsk(bookOrd.getOrderID());
+            }
+            else {
+                bookOrd = this.getBids().peek();
+                et.setBid(bookOrd.getOrderID());
+                et.setAsk(incoming.getOrderID());
+
+            }
             Integer qtyBias = incoming.getUnfulfilledQty() - bookOrd.getUnfulfilledQty();
             Integer fulfilledQty = Math.min(incoming.getUnfulfilledQty(), bookOrd.getUnfulfilledQty());
-            ExecutedTrade et = ExecutedTrade.create(incoming, bookOrd);
             if (qtyBias == 0) {
                 incoming.setOrderStatus(OrderStatus.fulfilled);
                 bookOrd.setOrderStatus(OrderStatus.fulfilled);

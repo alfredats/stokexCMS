@@ -51,6 +51,10 @@ public class AuthService {
         sessRepo.invalidateSess(sessKey);
     }
 
+    /**
+     * @param sessKey
+     * @return String[] - [0] -> user's name, [1] -> user's username
+     */
     public String[] getUserDetailsBySessKey(String sessKey) {
         return uRepo.getUserDetailsBySessKey(sessKey);
     }
