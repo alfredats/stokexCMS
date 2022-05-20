@@ -23,6 +23,7 @@ import visa.vttp.paf.stokexCMS.service.OrderBookService;
 import static visa.vttp.paf.stokexCMS.engine.OrderBookEngine.TICKER_TEST_ONLY;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @SpringBootTest
 @TestInstance(Lifecycle.PER_CLASS)
@@ -43,6 +44,12 @@ class Test_OrderBookService {
     @BeforeAll
     private void initTestOrders() {
         this.testBid = new Order();
+        this.testAsk = new Order();
+    }
+
+    @BeforeEach
+    private void removeOrderIDs() {
+        this.testBid.setOrderID(null);
         this.testBid.setOrderType(OrderType.bid);
         this.testBid.setOrderStatus(OrderStatus.created);
         this.testBid.setTicker(TICKER_TEST_ONLY);
@@ -51,7 +58,7 @@ class Test_OrderBookService {
         this.testBid.setUsername("testUser1");
         this.testBid.setCreated(LocalDateTime.now());
 
-        this.testAsk = new Order();
+        this.testAsk.setOrderID(null);
         this.testAsk.setOrderType(OrderType.ask);
         this.testAsk.setOrderStatus(OrderStatus.created);
         this.testAsk.setTicker(TICKER_TEST_ONLY);
@@ -59,12 +66,6 @@ class Test_OrderBookService {
         this.testAsk.setPrice(100.00d);
         this.testAsk.setUsername("testUser2");
         this.testAsk.setCreated(LocalDateTime.now());
-    }
-
-    @BeforeEach
-    private void removeOrderIDs() {
-        this.testBid.setOrderID(null);
-        this.testAsk.setOrderID(null);
     }
     
     @AfterEach
@@ -77,8 +78,11 @@ class Test_OrderBookService {
     @Test
     @org.junit.jupiter.api.Order(1)
     public void submitNewOrderSuccessful() {
-        assertTrue(null != obSvc.submitNewOrder(this.testBid));
+        Integer bidID = obSvc.submitNewOrder(this.testBid);
+        assertTrue(null != bidID);
         assertTrue(null != obSvc.submitNewOrder(this.testAsk));
+        Order o = obSvc.getOrderByOrderID(bidID);
+        assertTrue(null != o);
     }
 
     @Test
@@ -129,8 +133,53 @@ class Test_OrderBookService {
             obSvc.updateOrderStatus(this.testAsk);
         } catch (RuntimeException ex) {
             fail("Failed to process order of type cancelled");
+            return;
         }
         assertTrue(true);
     }
+
+    @Test
+    @org.junit.jupiter.api.Order(6)
+    public void getOrdersByUsername_pass() {
+        Integer bidID; Integer askID;
+        try {
+            bidID = obSvc.submitNewOrder(this.testAsk);
+            askID = obSvc.submitNewOrder(this.testBid);
+        } catch (RuntimeException ex) {
+            fail("Failed to upload precursor orders");
+        }
+        List<Order> ords1 = obSvc.getOrdersByUsername("testUser1", false);
+        assertTrue(ords1.size() == 1);
+        List<Order> ords2 = obSvc.getOrdersByUsername("testUser2", false);
+        assertTrue(ords2.size() == 1);
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(7)
+    public void getActiveOrders_pass() {
+        try {
+            obSvc.submitNewOrder(this.testAsk);
+            obSvc.submitNewOrder(this.testBid);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+            fail("Failed to upload precursor orders: " + ex.getMessage());
+        }
+        List<Order> ords1 = obSvc.getActiveOrders();
+        assertTrue(ords1.size() > 0);
+    }
+
+    @Test
+    @org.junit.jupiter.api.Order(8)
+    public void submitNewOrder_fail() {
+        this.testAsk.setOrderID(1234);
+        try {
+            obSvc.submitNewOrder(this.testAsk);
+        } catch (RuntimeException ex) {
+            assertTrue(true);
+            return;
+        }
+        fail("Should fail for order with orderID");
+    }
+
 
 }

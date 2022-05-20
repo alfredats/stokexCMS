@@ -1,53 +1,46 @@
 package visa.vttp.paf.stokexCMS.utils;
 
-import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
-import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
-import visa.vttp.paf.stokexCMS.engine.datatypes.Executed;
+import jakarta.json.JsonValue.ValueType;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+import jakarta.json.JsonWriterFactory;
+import static jakarta.json.stream.JsonGenerator.PRETTY_PRINTING;
 import visa.vttp.paf.stokexCMS.engine.datatypes.ExecutedTrade;
 import visa.vttp.paf.stokexCMS.model.Order;
-import visa.vttp.paf.stokexCMS.model.price.PriceTuple;
+import visa.vttp.paf.stokexCMS.model.Portfolio;
+import visa.vttp.paf.stokexCMS.model.Stock;
 
 public class StokexUtils {
 
-    private static DateTimeFormatter genDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static DateTimeFormatter intraDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final JsonWriterFactory jwf = Json.createWriterFactory(Map.of(PRETTY_PRINTING, true));
+    public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-    public static final TimeSeries createPrice(String jsonResp, boolean isIntraday) {
-        if (isIntraday) { return createPrice(jsonResp, intraDtf); }
-        return createPrice(jsonResp, genDtf);
-    }
-
-    public static final TimeSeries createPrice(String jsonResp, DateTimeFormatter dtf) {
-        TimeSeries p = new TimeSeries();
-        JsonObject json = Json.createReader(new StringReader(jsonResp)).readObject();
-        JsonObject metadata = json.getJsonObject("meta");
-        JsonArray timeSeries = json.getJsonArray("values");
-        
-        List<PriceTuple> lpt = new ArrayList<>();
-        p.setId(metadata.getString("symbol"));
-        timeSeries.stream()
-            .map(x -> (JsonObject) x)
-            .forEach((JsonObject x) -> {
-                PriceTuple pt = new PriceTuple();
-                BigDecimal bd = new BigDecimal(x.getString("close"));
-                pt.setDatetime(LocalDateTime.parse(x.getString("datetime"), dtf));
-                pt.setPrice(bd.setScale(2, RoundingMode.HALF_EVEN));
-                lpt.add(pt);
-            });
-        p.setPriceData(lpt);
-        return p;
+    /**
+     * Returns a pretty printed json string
+     * @param json - JsonObject or JsonValue
+     * @return  pretty printed json
+     */
+    public static final String prettyPrintJson(JsonValue json) {
+        StringWriter sw = new StringWriter();
+        JsonWriter jw = jwf.createWriter(sw);
+        if (json.getValueType() == ValueType.ARRAY) {
+            jw.writeArray(json.asJsonArray());
+        } else if (json.getValueType() == ValueType.OBJECT) {
+            jw.writeObject(json.asJsonObject());
+        }
+        jw.close();
+        return sw.toString();
     }
 
     public static final Order createOrder(SqlRowSet rs) {
@@ -63,6 +56,19 @@ public class StokexUtils {
         o.setUsername(rs.getString("username"));
         return o;
     }
+    
+    public static final Order newOrder(JsonObject req) {
+        Order o = new Order();
+        // should probaby add a check for 2 decimal points here
+        BigDecimal price = req.getJsonNumber("price").bigDecimalValue();
+        price.setScale(2, RoundingMode.HALF_EVEN);
+
+        o.setTicker(req.getString("ticker").toUpperCase());
+        o.setPrice(price);
+        o.setUnfulfilledQty(req.getJsonNumber("size").intValue());
+        o.setOrderType(req.getJsonNumber("orderType").intValue());
+        return o;
+    }
 
     public static final ExecutedTrade createExecuted(SqlRowSet rs) {
         ExecutedTrade et = new ExecutedTrade();
@@ -74,5 +80,24 @@ public class StokexUtils {
         return et;
     }
 
-    
+    public static Stock createStock(SqlRowSet rs) {
+        Stock s = new Stock();
+        s.setTicker(rs.getString("ticker"));
+        s.setExchange(rs.getString("exchange"));
+        s.setCompanyName(rs.getString("companyName"));
+        s.setCurrentPrice(rs.getBigDecimal("currentPrice"));
+        s.setTimestamp(LocalDateTime.parse(rs.getString("timestamp_created"), dtf));
+        return s;
+    }
+
+    public static Portfolio createPortfolio(SqlRowSet rs) {
+        Portfolio pf = new Portfolio();
+        pf.setAvailableFunds(rs.getBigDecimal("available_funds"));
+        pf.setPortfolioValue(rs.getBigDecimal("portfolio_value"));
+        pf.setTimestampCreated(LocalDateTime.parse(rs.getString("timestamp_created"), dtf));
+        return pf;
+    }
+
+
+
 }

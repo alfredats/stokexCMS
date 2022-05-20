@@ -3,6 +3,10 @@ package visa.vttp.paf.stokexCMS.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+
 public class Order {
     private Integer orderID;
     private String username;
@@ -13,6 +17,21 @@ public class Order {
     private Integer orderStatus;
     private LocalDateTime created;
     private LocalDateTime updated;
+
+    public JsonObject toJson() {
+        JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
+        return jsonBuilder.add("orderId", orderID)
+            .add("username", username)
+            .add("ticker", ticker)
+            .add("price", price)
+            .add("quantity", unfulfilledQty)
+            .add("orderType", orderType)
+            .add("orderStatus", orderStatus)
+            .add("created", created.toString())
+            .add("updated", updated.toString())
+            .build();
+    }
+
 
     @Override
     public String toString() {

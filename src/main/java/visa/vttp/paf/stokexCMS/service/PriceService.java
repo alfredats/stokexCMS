@@ -21,7 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import visa.vttp.paf.stokexCMS.config.PriceProperties;
 import visa.vttp.paf.stokexCMS.model.price.TimeSeries;
 import visa.vttp.paf.stokexCMS.repo.PriceRepository;
-import visa.vttp.paf.stokexCMS.utils.StokexUtils;
+import visa.vttp.paf.stokexCMS.utils.PriceUtils;
 
 @Service
 @EnableConfigurationProperties(PriceProperties.class)
@@ -70,7 +70,7 @@ public class PriceService {
 
         Optional<String> resp = this.exchangeGet(req);
         if (resp.isPresent()) {
-            TimeSeries p = StokexUtils.createPrice(resp.get(), interval.equals("5min"));
+            TimeSeries p = PriceUtils.createPrice(resp.get(), interval.equals("5min"));
             p.setTime(ttlMap.get(interval));
             p.setName(ticker + ":" + interval);
             pRepo.save(p);

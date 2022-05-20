@@ -4,27 +4,6 @@ CREATE SCHEMA stokex;
 
 USE stokex;
 
-CREATE TABLE stocks (
-  ticker varchar(10) not null
-, company varchar(256) not null
-, currentPrice float(10,2) not null
-
-, PRIMARY KEY(ticker)
-);
-
--- USERS SCHEMA
-CREATE TABLE users (
-  username char(64) not null
-, password binary(20) not null
-, apiKey binary(20) not null
-, access enum('user', 'admin') DEFAULT('user')
-, dateCreated datetime not null DEFAULT(CURRENT_TIMESTAMP)
-
-, PRIMARY KEY(username)
-);
-
-
--- ORDER BOOK SCHEMA
 CREATE TABLE orderType (
   type_int int not null
 , order_type varchar(128)
@@ -38,6 +17,28 @@ CREATE TABLE orderStatus (
 
 , PRIMARY KEY(status_int)
 );
+
+CREATE TABLE stocks (
+  ticker varchar(16) not null
+, exchange varchar(16) not null
+, companyName varchar(256) not null
+, currentPrice float(10,2) not null
+, timestamp_created datetime not null DEFAULT(CURRENT_TIMESTAMP)
+
+, PRIMARY KEY(ticker)
+);
+
+-- USERS SCHEMA
+CREATE TABLE users (
+  username char(64) not null
+, password binary(20) not null
+, name char(64) not null
+, access enum('user', 'admin') DEFAULT('user')
+, dateCreated datetime not null DEFAULT(CURRENT_TIMESTAMP)
+
+, PRIMARY KEY(username)
+);
+
 
 CREATE TABLE orderBook (
   order_id int not null auto_increment
@@ -84,6 +85,30 @@ CREATE TABLE trades (
 , CONSTRAINT fk_trades_ticker
     FOREIGN KEY(ticker)
     REFERENCES stocks(ticker)
-)
+);
 
+CREATE TABLE userSessions (
+  session_id char(32) not null
+, username char(64) not null
+, timestamp_created datetime not null
+, timestamp_expired datetime not null
+
+, PRIMARY KEY(session_id)
+, CONSTRAINT fk_userSessions_username
+    FOREIGN KEY(username)
+    REFERENCES users(username)
+);
+
+CREATE TABLE monies (
+  monies_id int not null
+, username char(64) not null
+, portfolio_value float(10,2) not null
+, available_funds float(10,2) not null
+, timestamp_created datetime not null DEFAULT(CURRENT_TIMESTAMP)
+
+, PRIMARY KEY(monies_id)
+, CONSTRAINT fk_monies_username
+    FOREIGN KEY(username)
+    REFERENCES users(username)
+)
 

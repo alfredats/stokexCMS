@@ -1,6 +1,7 @@
 package visa.vttp.paf.stokexCMS.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class OrderBookService {
     @Autowired
     private OrderBookRepository obRepo;
 
+    public Order getOrderByOrderID(Integer orderID) {
+        return obRepo.getOrderByOrderID(orderID);
+    }
     public Integer submitNewOrder(Order o) {
         Integer id = o.getOrderID();
         if (null != id) {
@@ -38,8 +42,9 @@ public class OrderBookService {
         }
     }
 
-    public List<Order> getOrdersByUsername(String username, Boolean isActive) {
-        if (isActive) { return obRepo.getActiveOrdersByUsername(username); }
+    public List<Order> getOrdersByUsername(String username) { return this.getOrdersByUsername(username, null); }
+    public List<Order> getOrdersByUsername(String username, Boolean activeOnly) {
+        if (null != activeOnly && activeOnly) { return obRepo.getActiveOrdersByUsername(username); }
         return obRepo.getAllOrdersByUsername(username);
     }
 
