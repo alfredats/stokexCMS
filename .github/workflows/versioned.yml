@@ -24,3 +24,10 @@ jobs:
         maven-version: 3.8.4
     - name: Run tests
       run: mvn clean verify
+    - name: Deploy
+      uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: "stokex-cms"
+        heroku_email: ${{secrets.HEROKU_EMAIL}}
+        branch: ${{github.ref_name}}
