@@ -61,8 +61,7 @@ public interface Queries {
             timestamp_created, 
             timestamp_updated
         FROM orderBook
-        WHERE order_status < 20
-        AND username = ?
+        WHERE username = ?
         ORDER BY timestamp_updated DESC;
         """;
     
