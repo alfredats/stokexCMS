@@ -6,6 +6,12 @@
 
 [![Release](https://github.com/alfredats/stokexCMS/actions/workflows/versioned.yml/badge.svg)](https://github.com/alfredats/stokexCMS/actions/workflows/versioned.yml)
 
+
+## Description
+
+This package is meant to be a backend server for [Stokex](https://github.com/alfredats/stokex).
+
+
 ## Endpoints
 
 ### Price
